@@ -33,14 +33,7 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      <Global
-        styles={{
-          'button[data-qa^=submit-button]': {
-            display: 'none',
-          },
-        }}
-      />
-      {!submittedForm ? <div css={{ height: 500 }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      {!submittedForm ? <div css={{ height: 500, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
     </div>
   );
 };
