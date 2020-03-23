@@ -53,11 +53,11 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
     var formData = new FormData();
     formData.append('file', blob);
     formData.append('user', uid);
-
     try {
       await fetch(dest, {
         // content-type header should not be specified!
         method: 'POST',
+        mode: 'no-cors',
         body: formData,
       });
     } catch (e) {
@@ -65,23 +65,18 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
     }
   };
 
-  if (state === 'Finished') {
-    return <div>Thank you!</div>;
-  }
-
   return (
     <React.Fragment>
       <ReactMic
         record={state === 'Recording'}
         className="sound-wave"
         onStop={data => {
-          console.log(data);
           uploadFile(data.blob);
         }}
         strokeColor="#000000"
         backgroundColor="#FFF"
       />
-      <CaptureButton {...{ state, setState }} />
+      {state !== 'Finished' ? <CaptureButton {...{ state, setState }} /> : <div>Thank you!</div>}
     </React.Fragment>
   );
 };
