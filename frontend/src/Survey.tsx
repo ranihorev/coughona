@@ -44,7 +44,7 @@ export const Survey: React.FC = () => {
   );
 };
 
-type CaptureState = 'Empty' | 'Recording' | 'Finished';
+type CaptureState = 'Empty' | 'Recording' | 'Finished' | 'Failed';
 
 const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
   const [state, setState] = React.useState<CaptureState>('Empty');
@@ -99,14 +99,36 @@ const CaptureButton: React.FC<{
     return () => clearInterval(timer);
   }, [setState, counter, state]);
 
+  React.useEffect(() => {
+    navigator.permissions.query({ name: 'microphone' }).then(permissionStatus => {
+      console.log(permissionStatus.state);
+      if (permissionStatus.state === 'denied') setState('Failed');
+    });
+  }, [setState]);
+
   return (
     <React.Fragment>
       <Button
         variant="contained"
         color="primary"
-        onClick={() => setState(state => (state === 'Empty' ? 'Recording' : 'Finished'))}
+        onClick={() => {
+          if (state === 'Empty' || state === 'Failed') {
+            navigator.mediaDevices
+              .getUserMedia({ audio: true })
+              .then(a => {
+                setState('Recording');
+              })
+              .catch(() => {
+                setState('Failed');
+              });
+          }
+          if (state === 'Recording') {
+            setState('Finished');
+          }
+        }}
+        disabled={state === 'Failed'}
       >
-        {state === 'Empty' ? 'Record Cough' : 'Finish'}{' '}
+        {state === 'Failed' ? 'Please enable microphone' : state === 'Empty' ? 'Record Cough' : 'Finish'}
       </Button>
       <div css={{ width: 200, height: 80, marginTop: 20 }}>
         {isRecording && counter > 0 && (
