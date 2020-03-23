@@ -11,9 +11,10 @@ export const Survey: React.FC = () => {
   const [submittedForm, setSubmittedForm] = React.useState(false);
   const uid = React.useRef(uuidv4());
 
+  const form_url = process.env.REACT_APP_FORM_URL;
   React.useEffect(() => {
     if (!ref.current) return;
-    typeform.makeWidget(ref.current, `https://ranihorev.typeform.com/to/kHF0vw?uid=${uid.current}`, {
+    typeform.makeWidget(ref.current, `${form_url}?uid=${uid.current}`, {
       onSubmit: () => {
         setSubmittedForm(true);
       },
