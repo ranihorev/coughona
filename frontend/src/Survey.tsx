@@ -23,6 +23,28 @@ export const Survey: React.FC = () => {
     });
   }, [ref.current]);
 
+  const isSupportedAgent = !navigator.userAgent.match('CriOS');
+
+  if (!isSupportedAgent) {
+    return (
+      <div
+        css={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontSize: 18,
+          padding: 30,
+          textAlign: 'center',
+        }}
+      >
+        Audio recording is not supported on iOS, except on Safari. <br />
+        <div css={{ paddingTop: 8 }}>Please switch to Safari to continue</div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="hide-submit"
