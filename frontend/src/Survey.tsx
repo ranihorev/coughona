@@ -78,6 +78,7 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
         mode: 'no-cors',
         body: formData,
       });
+      setState('Finished');
     } catch (e) {
       console.error(e);
     }

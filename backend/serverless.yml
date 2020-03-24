@@ -5,9 +5,17 @@ provider:
   runtime: nodejs12.x
   stage: prod
   region: us-east-1
-  environment:
-    AWS_ACCESS_KEY_ID: ${file(./serverless.env.yml):prod.AWS_ACCESS_KEY_ID}
-    AWS_SECRET_ACCESS_KEY: ${file(./serverless.env.yml):prod.AWS_SECRET_ACCESS_KEY}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::coughona"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        - "arn:aws:s3:::coughona/*"
 
 plugins:
   - serverless-plugin-typescript-express
@@ -26,3 +34,7 @@ functions:
       - http:
           path: /upload
           method: post
+
+custom:
+  serverless-offline:
+    httpPort: 4000

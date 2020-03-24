@@ -5,11 +5,31 @@
       "name": "coughona-backend"
     },
     "provider": {
-      "stage": "dev",
+      "stage": "prod",
       "variableSyntax": "\\${([^{}]+?)}",
       "name": "aws",
       "runtime": "nodejs12.x",
       "region": "us-east-1",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:ListBucket"
+          ],
+          "Resource": [
+            "arn:aws:s3:::coughona"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:PutObject"
+          ],
+          "Resource": [
+            "arn:aws:s3:::coughona/*"
+          ]
+        }
+      ],
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -73,13 +93,13 @@
           "HealthLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/coughona-backend-dev-health"
+              "LogGroupName": "/aws/lambda/coughona-backend-prod-health"
             }
           },
           "AppLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/coughona-backend-dev-app"
+              "LogGroupName": "/aws/lambda/coughona-backend-prod-app"
             }
           },
           "IamRoleLambdaExecution": {
@@ -107,7 +127,7 @@
                     "Fn::Join": [
                       "-",
                       [
-                        "coughona-backend-dev",
+                        "coughona-backend-prod",
                         "lambda"
                       ]
                     ]
@@ -123,7 +143,7 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/coughona-backend-dev*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/coughona-backend-prod*:*"
                           }
                         ]
                       },
@@ -134,9 +154,15 @@
                         ],
                         "Resource": [
                           {
-                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/coughona-backend-dev*:*:*"
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/coughona-backend-prod*:*:*"
                           }
                         ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][0]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
                       }
                     ]
                   }
@@ -147,7 +173,7 @@
                 "Fn::Join": [
                   "-",
                   [
-                    "coughona-backend-dev",
+                    "coughona-backend-prod",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -164,9 +190,9 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/coughona-backend/dev/1584950855990-2020-03-23T08:07:35.990Z/coughona-backend.zip"
+                "S3Key": "serverless/coughona-backend/prod/1585078578449-2020-03-24T19:36:18.449Z/coughona-backend.zip"
               },
-              "FunctionName": "coughona-backend-dev-health",
+              "FunctionName": "coughona-backend-prod-health",
               "Handler": "dist/index.handler",
               "MemorySize": 1024,
               "Role": {
@@ -183,14 +209,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "HealthLambdaVersion4D6mCmZZGDSY6kD4N0qBjIpxGSKTjayGQq2KQJGgo": {
+          "HealthLambdaVersionrmH0eZT3tzhy3nuu4F1VPCwZFhiwXgdeCgrYRScjs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HealthLambdaFunction"
               },
-              "CodeSha256": "ZniekA4lWK6jiJYvuxypc17Fr4n5JoaLnpQDt38wwfE="
+              "CodeSha256": "4arVHtNIFMSasIim1gl8ijJYMiWsSI7WXjnJVdRNBXQ="
             }
           },
           "AppLambdaFunction": {
@@ -200,9 +226,9 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/coughona-backend/dev/1584950855990-2020-03-23T08:07:35.990Z/coughona-backend.zip"
+                "S3Key": "serverless/coughona-backend/prod/1585078578449-2020-03-24T19:36:18.449Z/coughona-backend.zip"
               },
-              "FunctionName": "coughona-backend-dev-app",
+              "FunctionName": "coughona-backend-prod-app",
               "Handler": "dist/index.handler",
               "MemorySize": 1024,
               "Role": {
@@ -219,20 +245,20 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "AppLambdaVersion3AnrEmI0r3LBSXhJ8iXZMIUEU1MEOXhKaqFG1LitTsQ": {
+          "AppLambdaVersionPCSsRtxDwTsqeseqZqrIMzheciydFyhlrxcF8Gj1KQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "ZniekA4lWK6jiJYvuxypc17Fr4n5JoaLnpQDt38wwfE="
+              "CodeSha256": "4arVHtNIFMSasIim1gl8ijJYMiWsSI7WXjnJVdRNBXQ="
             }
           },
           "ApiGatewayRestApi": {
             "Type": "AWS::ApiGateway::RestApi",
             "Properties": {
-              "Name": "dev-coughona-backend",
+              "Name": "prod-coughona-backend",
               "EndpointConfiguration": {
                 "Types": [
                   "EDGE"
@@ -345,13 +371,13 @@
               "MethodResponses": []
             }
           },
-          "ApiGatewayDeployment1584950844258": {
+          "ApiGatewayDeployment1585078565860": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               },
-              "StageName": "dev"
+              "StageName": "prod"
             },
             "DependsOn": [
               "ApiGatewayMethodGet",
@@ -442,13 +468,13 @@
           "HealthLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HealthLambdaVersion4D6mCmZZGDSY6kD4N0qBjIpxGSKTjayGQq2KQJGgo"
+              "Ref": "HealthLambdaVersionrmH0eZT3tzhy3nuu4F1VPCwZFhiwXgdeCgrYRScjs"
             }
           },
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersion3AnrEmI0r3LBSXhJ8iXZMIUEU1MEOXhKaqFG1LitTsQ"
+              "Ref": "AppLambdaVersionPCSsRtxDwTsqeseqZqrIMzheciydFyhlrxcF8Gj1KQ"
             }
           },
           "ServiceEndpoint": {
@@ -469,7 +495,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/dev"
+                  "/prod"
                 ]
               ]
             }
@@ -562,13 +588,13 @@
             }
           }
         ],
-        "name": "coughona-backend-dev-health",
+        "name": "coughona-backend-prod-health",
         "package": {},
         "memory": 1024,
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "HealthLambdaVersion4D6mCmZZGDSY6kD4N0qBjIpxGSKTjayGQq2KQJGgo"
+        "versionLogicalId": "HealthLambdaVersionrmH0eZT3tzhy3nuu4F1VPCwZFhiwXgdeCgrYRScjs"
       },
       "app": {
         "handler": "dist/index.handler",
@@ -581,13 +607,13 @@
             }
           }
         ],
-        "name": "coughona-backend-dev-app",
+        "name": "coughona-backend-prod-app",
         "package": {},
         "memory": 1024,
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersion3AnrEmI0r3LBSXhJ8iXZMIUEU1MEOXhKaqFG1LitTsQ"
+        "versionLogicalId": "AppLambdaVersionPCSsRtxDwTsqeseqZqrIMzheciydFyhlrxcF8Gj1KQ"
       }
     },
     "serviceFilename": "serverless.yml",
@@ -596,7 +622,7 @@
     "artifact": "/Users/ranihorev/Documents/Code/coughona/backend/.serverless/coughona-backend.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/coughona-backend/dev/1584950855990-2020-03-23T08:07:35.990Z",
+    "artifactDirectoryName": "serverless/coughona-backend/prod/1585078578449-2020-03-24T19:36:18.449Z",
     "artifact": "coughona-backend.zip"
   }
 }

@@ -19,14 +19,19 @@ var upload = multer({
 
 // simple verification endpoint
 app.get("/", (req, res) => {
-  console.log(process.env.AWS_ACCESS_KEY_ID);
-  return res.send(process.env.AWS_ACCESS_KEY_ID);
+  return res.send("Hello world");
 });
 
 // handle crashes here.
 app.post("/upload", upload.single("file"), async (req, res) => {
-  const result = await uploadFile(req.body.user, req.file.buffer);
-  // res.send()
+  try {
+    const result = await uploadFile(req.body.user, req.file.buffer);
+    res.send("Success");
+  } catch (e) {
+    console.error(e);
+    res.statusCode = 500;
+    res.send(`Failed to upload ${e}`);
+  }
 });
 
 // global error handler.
