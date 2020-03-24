@@ -1,0 +1,40 @@
+service: coughona-backend
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: prod
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::coughona"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource:
+        - "arn:aws:s3:::coughona/*"
+
+plugins:
+  - serverless-plugin-typescript-express
+  - serverless-offline
+
+functions:
+  health:
+    handler: dist/index.handler
+    events:
+      - http:
+          path: /
+          method: get
+  app:
+    handler: dist/index.handler
+    events:
+      - http:
+          path: /upload
+          method: post
+
+custom:
+  serverless-offline:
+    httpPort: 4000
