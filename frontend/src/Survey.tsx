@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { Global, jsx } from '@emotion/core';
+import { jsx } from '@emotion/core';
 import { Button, LinearProgress } from '@material-ui/core';
 import * as typeform from '@typeform/embed';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +18,8 @@ export const Survey: React.FC = () => {
       onSubmit: () => {
         setSubmittedForm(true);
       },
+      hideHeaders: true,
+      hideFooter: true,
     });
   }, [ref.current]);
 
@@ -33,15 +35,15 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      {!submittedForm ? <div css={{ height: 500, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      {!submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
     </div>
   );
 };
 
-type CaptureState = 'Empty' | 'Recording' | 'Finished' | 'Failed';
+type CaptureState = 'NotReady' | 'Empty' | 'Recording' | 'Finished' | 'Failed';
 
 const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
-  const [state, setState] = React.useState<CaptureState>('Empty');
+  const [state, setState] = React.useState<CaptureState>('NotReady');
   const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
   const uploadFile = async (blob: Blob) => {
     var formData = new FormData();
@@ -75,6 +77,14 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
   );
 };
 
+const stateToButtonTxt: { [state in CaptureState]: string } = {
+  NotReady: 'Checking Permissions',
+  Empty: 'Record Cough',
+  Recording: 'Recording',
+  Finished: 'Thank you!',
+  Failed: 'No microphone permissions :(',
+};
+
 const CaptureButton: React.FC<{
   state: CaptureState;
   setState: React.Dispatch<React.SetStateAction<CaptureState>>;
@@ -94,11 +104,19 @@ const CaptureButton: React.FC<{
   }, [setState, counter, state]);
 
   React.useEffect(() => {
-    navigator.permissions.query({ name: 'microphone' }).then(permissionStatus => {
-      console.log(permissionStatus.state);
-      if (permissionStatus.state === 'denied') setState('Failed');
-    });
-  }, [setState]);
+    if (!navigator?.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setState('Failed');
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(
+      success => {
+        setState('Empty');
+      },
+      error => {
+        setState('Failed');
+      },
+    );
+  }, [state, setState]);
 
   return (
     <React.Fragment>
@@ -106,7 +124,7 @@ const CaptureButton: React.FC<{
         variant="contained"
         color="primary"
         onClick={() => {
-          if (state === 'Empty' || state === 'Failed') {
+          if (state === 'NotReady' || state === 'Failed') {
             navigator.mediaDevices
               .getUserMedia({ audio: true })
               .then(a => {
@@ -122,7 +140,7 @@ const CaptureButton: React.FC<{
         }}
         disabled={state === 'Failed'}
       >
-        {state === 'Failed' ? 'Please enable microphone' : state === 'Empty' ? 'Record Cough' : 'Finish'}
+        {stateToButtonTxt[state]}
       </Button>
       <div css={{ width: 200, height: 80, marginTop: 20 }}>
         {isRecording && counter > 0 && (
