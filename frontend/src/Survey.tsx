@@ -5,14 +5,16 @@ import * as typeform from '@typeform/embed';
 import { v4 as uuidv4 } from 'uuid';
 import React from 'react';
 import { ReactMic } from 'react-mic';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const Survey: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [submittedForm, setSubmittedForm] = React.useState(false);
   const uid = React.useRef(uuidv4());
 
-  const form_url = process.env.REACT_APP_FORM_URL;
   React.useEffect(() => {
+    const form_url = process.env.REACT_APP_FORM_URL;
     if (!ref.current) return;
     typeform.makeWidget(ref.current, `${form_url}?uid=${uid.current}`, {
       onSubmit: () => {
@@ -21,7 +23,7 @@ export const Survey: React.FC = () => {
       hideHeaders: true,
       hideFooter: true,
     });
-  }, [ref.current]);
+  }, [ref, ref.current]);
 
   const isSupportedAgent = !navigator.userAgent.match('CriOS');
 
@@ -57,35 +59,17 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      {!submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      {submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      <ToastContainer />
     </div>
   );
 };
 
-type CaptureState = 'NotReady' | 'Empty' | 'Recording' | 'Finished' | 'Failed';
+type CaptureState = 'NotReady' | 'Empty' | 'Recording' | 'Uploading' | 'Finished' | 'Failed';
 
-const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
-  const [state, setState] = React.useState<CaptureState>('NotReady');
-  const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
-  const uploadFile = async (blob: Blob) => {
-    var formData = new FormData();
-    formData.append('file', blob);
-    formData.append('user', uid);
-    try {
-      await fetch(dest, {
-        // content-type header should not be specified!
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData,
-      });
-      setState('Finished');
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  return (
-    <React.Fragment>
+const Recorder: React.FC<{ state: CaptureState; uploadFile: (data: Blob) => void }> = React.memo(
+  ({ state, uploadFile }) => {
+    return (
       <ReactMic
         record={state === 'Recording'}
         className="sound-wave"
@@ -95,6 +79,41 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
         strokeColor="#000000"
         backgroundColor="#FFF"
       />
+    );
+  },
+);
+
+const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
+  const [state, setState] = React.useState<CaptureState>('NotReady');
+
+  const uploadFile = React.useCallback(
+    async (blob: Blob) => {
+      const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
+      var formData = new FormData();
+      formData.append('file', blob);
+      formData.append('user', uid);
+      console.log('upload');
+      try {
+        await fetch(dest, {
+          // content-type header should not be specified!
+          method: 'POST',
+          mode: 'no-cors',
+          body: formData,
+        });
+        setState('Finished');
+      } catch (e) {
+        toast.error('Failed to upload file :(', {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
+        console.error(e);
+      }
+    },
+    [uid],
+  );
+
+  return (
+    <React.Fragment>
+      <Recorder state={state} uploadFile={uploadFile} />
       {state !== 'Finished' ? <CaptureButton {...{ state, setState }} /> : <div>Thank you!</div>}
     </React.Fragment>
   );
@@ -105,6 +124,7 @@ const stateToButtonTxt: { [state in CaptureState]: string } = {
   Empty: 'Record Cough',
   Recording: 'Recording',
   Finished: 'Thank you!',
+  Uploading: 'Uploading',
   Failed: 'No microphone permissions :(',
 };
 
@@ -119,7 +139,7 @@ const CaptureButton: React.FC<{
   React.useEffect(() => {
     if (state !== 'Recording') return () => {};
     if (counter <= 0) {
-      setState('Finished');
+      setState('Uploading');
       return () => {};
     }
     const timer = setInterval(() => setCounter(counter - interval), interval);
@@ -139,7 +159,7 @@ const CaptureButton: React.FC<{
         setState('Failed');
       },
     );
-  }, [state, setState]);
+  }, [setState]);
 
   return (
     <React.Fragment>
@@ -157,11 +177,14 @@ const CaptureButton: React.FC<{
                 setState('Failed');
               });
           }
+          if (state === 'Empty') {
+            setState('Recording');
+          }
           if (state === 'Recording') {
             setState('Finished');
           }
         }}
-        disabled={state === 'Failed'}
+        disabled={state !== 'Empty' && state !== 'Recording'}
       >
         {stateToButtonTxt[state]}
       </Button>
