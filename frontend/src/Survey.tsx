@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Button, LinearProgress } from '@material-ui/core';
+import { Button, LinearProgress, Link } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 import * as typeform from '@typeform/embed';
 import { v4 as uuidv4 } from 'uuid';
 import React from 'react';
@@ -59,6 +60,7 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
+      <div css={{ position: 'absolute', zIndex: 1000, top: 15, right: 15}}><Link component={RouterLink} to="/about">About</Link></div>
       {!submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
       <ToastContainer />
     </div>
