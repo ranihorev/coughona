@@ -1,23 +1,55 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { Button, LinearProgress, Link } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
 import * as typeform from '@typeform/embed';
-import { v4 as uuidv4 } from 'uuid';
+import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
 import { ReactMic } from 'react-mic';
+import { Link as RouterLink } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { v4 as uuidv4 } from 'uuid';
+
+const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
+  if (data.amazon[type]) {
+    return 'Amazon';
+  }
+  if (data.windows[type]) {
+    return 'Windows';
+  }
+  if (data.apple[type]) {
+    return 'Apple';
+  }
+  if (data.android[type]) {
+    return 'Android';
+  }
+  return 'Other';
+}
+
+const getDeviceData = () => {
+  const data = isMobile();
+  let type = 'Desktop';
+  let model = 'Unknown';
+  if (data.phone) {
+    type = 'Phone';
+    model = getDeviceModel(data, 'phone');
+  } else if (data.tablet) {
+    type = 'Tablet';
+    model = getDeviceModel(data, 'tablet');
+  }
+  console.log(navigator.userAgent);
+  return { type, model, userAgent: encodeURI(navigator.userAgent) };
+}
 
 export const Survey: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [submittedForm, setSubmittedForm] = React.useState(false);
   const uid = React.useRef(uuidv4());
-
   React.useEffect(() => {
     const form_url = process.env.REACT_APP_FORM_URL;
     if (!ref.current) return;
-    typeform.makeWidget(ref.current, `${form_url}?uid=${uid.current}`, {
+    const {model, type,userAgent} = getDeviceData();
+    typeform.makeWidget(ref.current, `${form_url}?uid=${uid.current}&device_type=${type}&device_model=${model}&user_agent=${userAgent}`, {
       onSubmit: () => {
         setSubmittedForm(true);
       },
