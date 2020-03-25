@@ -59,7 +59,7 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      {!submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      {!submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
       <ToastContainer />
     </div>
   );
