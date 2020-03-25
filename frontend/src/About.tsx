@@ -17,7 +17,7 @@ export const About: React.FC = () => {
           fontFamily: 'Roboto, sans-serif',
         }}
       >
-        <div css={{ maxWidth: 800, padding: 30, fontSize: 16, textAlign: 'left', lineHeight: 1.5 }}>
+        <div css={{ maxWidth: 800, padding: 30, overflow: 'auto', fontSize: 16, textAlign: 'left', lineHeight: 1.5 }}>
           <p>
             Coughona was created with the vision that simple, quick and home-based risk assessments of COVID-19 should
             be available to all. Since right now there aren't enough COVID-19 test kits for the masses, we are exploring
