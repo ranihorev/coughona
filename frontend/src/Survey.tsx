@@ -59,7 +59,7 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      {submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      {!submittedForm ? <div css={{ height: 600, width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
       <ToastContainer />
     </div>
   );
@@ -92,7 +92,6 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
       var formData = new FormData();
       formData.append('file', blob);
       formData.append('user', uid);
-      console.log('upload');
       try {
         await fetch(dest, {
           // content-type header should not be specified!
