@@ -37,7 +37,7 @@ export const About: React.FC = () => {
             that this tool can make a small difference in addressing this global epidemic.
           </p>
           <p>
-            For more questions or comments, feel free to contact us at
+            For more questions or comments, feel free to contact us at{' '}
             <Link href="mailto:info@coughona.com" target="_blank">
               info@coughona.com
             </Link>
