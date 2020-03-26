@@ -55,7 +55,11 @@ export const About: React.FC = () => {
           <Link href="https://www.linkedin.com/in/lautman/" target="_blank">
             Ziv
           </Link>
-          , Dvir, Idan, Tyler and{' '}
+          , Dvir, Idan,{' '}
+          <Link href="https://www.linkedin.com/in/tyler-chen/" target="_blank">
+            Tyler
+          </Link>{' '}
+          and{' '}
           <Link href="https://www.linkedin.com/in/rani-horev/" target="_blank">
             Rani
           </Link>
