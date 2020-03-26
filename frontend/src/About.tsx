@@ -24,9 +24,11 @@ export const About: React.FC = () => {
             an alternative way to test for COVID-19.
           </p>
           <p>
-            Studies showed that AI, specifically Deep Learning, is very effective at identifying various sort of lung
-            related diseases like the flu, bronchiolitis and pneumonia. There is a good chance the same holds true for
-            COVID-19.
+            <Link href="https://www.scihive.org/collection/5e7be8b6debc5169f3bceb2e/" target="_blank">
+              Studies
+            </Link>{' '}
+            showed that AI, specifically Deep Learning, is very effective at identifying various sort of lung related
+            diseases like the flu, bronchiolitis and pneumonia. There is a good chance the same holds true for COVID-19.
           </p>
           <p>
             Our vision is to collect the biggest database of COVID-19 coughs together with a related questionnaire, in
@@ -43,9 +45,19 @@ export const About: React.FC = () => {
             </Link>
             .
           </p>
-          <p>Wishing you all good health, <br />
-            Yaron, Ziv, Dvir, Idan, Tyler and Rani
-           
+          <p>
+            Wishing you all good health, <br />
+            <Link href="https://www.linkedin.com/in/yaronhadad/" target="_blank">
+              Yaron
+            </Link>
+            ,{' '}
+            <Link href="https://www.linkedin.com/in/lautman/" target="_blank">
+              Ziv
+            </Link>
+            , Dvir, Idan, Tyler and{' '}
+            <Link href="https://www.linkedin.com/in/rani-horev/" target="_blank">
+              Rani
+            </Link>
           </p>
           <div>
             <Link component={RouterLink} to="/">
