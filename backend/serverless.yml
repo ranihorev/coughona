@@ -26,7 +26,7 @@ functions:
     handler: dist/index.handler
     events:
       - http:
-          path: /
+          path: /test
           method: get
   app:
     handler: dist/index.handler

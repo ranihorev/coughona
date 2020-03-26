@@ -8,6 +8,6 @@
     "watch": [
         "src"
     ],
-    "exec": "yarn serverless --inspect",
+    "exec": "yarn start",
     "ext": "ts"
 }
