@@ -11,6 +11,15 @@ const port = process.env.PORT || 3001;
 const app = express();
 app.use(morgan("combined"));
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "https://www.coughona.com");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 var storage = multer.memoryStorage();
 var upload = multer({
   storage: storage,

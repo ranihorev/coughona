@@ -120,7 +120,6 @@ const Recorder: React.FC<{ state: CaptureState; uploadFile: (data: Blob) => void
         record={state === 'Recording'}
         className="sound-wave"
         onStop={data => {
-          console.log(data);
           uploadFile(data.blob);
         }}
         strokeColor="#000000"
