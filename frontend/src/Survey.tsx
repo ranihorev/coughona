@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import { Button, LinearProgress, Link } from '@material-ui/core';
 import * as typeform from '@typeform/embed';
+import Axios from 'axios';
 import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
 import { ReactMic } from 'react-mic';
@@ -24,7 +25,7 @@ const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
     return 'Android';
   }
   return 'Other';
-}
+};
 
 const getDeviceData = () => {
   const data = isMobile();
@@ -37,9 +38,8 @@ const getDeviceData = () => {
     type = 'Tablet';
     model = getDeviceModel(data, 'tablet');
   }
-  console.log(navigator.userAgent);
   return { type, model, userAgent: encodeURI(navigator.userAgent) };
-}
+};
 
 export const Survey: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -48,14 +48,18 @@ export const Survey: React.FC = () => {
   React.useEffect(() => {
     const form_url = process.env.REACT_APP_FORM_URL;
     if (!ref.current) return;
-    const {model, type,userAgent} = getDeviceData();
-    typeform.makeWidget(ref.current, `${form_url}?uid=${uid.current}&device_type=${type}&device_model=${model}&user_agent=${userAgent}`, {
-      onSubmit: () => {
-        setSubmittedForm(true);
+    const { model, type, userAgent } = getDeviceData();
+    typeform.makeWidget(
+      ref.current,
+      `${form_url}?uid=${uid.current}&device_type=${type}&device_model=${model}&user_agent=${userAgent}`,
+      {
+        onSubmit: () => {
+          setSubmittedForm(true);
+        },
+        hideHeaders: true,
+        hideFooter: true,
       },
-      hideHeaders: true,
-      hideFooter: true,
-    });
+    );
   }, [ref, ref.current]);
 
   const isSupportedAgent = !navigator.userAgent.match('CriOS');
@@ -92,8 +96,16 @@ export const Survey: React.FC = () => {
         alignItems: 'center',
       }}
     >
-      <div css={{ position: 'absolute', zIndex: 1000, top: 15, right: 15}}><Link component={RouterLink} to="/about">About</Link></div>
-      {!submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <AudioRecord uid={uid.current} />}
+      <div css={{ position: 'absolute', zIndex: 1000, top: 15, right: 15 }}>
+        <Link component={RouterLink} to="/about">
+          About
+        </Link>
+      </div>
+      {!submittedForm ? (
+        <div css={{ height: '100%', width: '100%' }} ref={ref}></div>
+      ) : (
+        <AudioRecord uid={uid.current} />
+      )}
       <ToastContainer />
     </div>
   );
@@ -108,10 +120,12 @@ const Recorder: React.FC<{ state: CaptureState; uploadFile: (data: Blob) => void
         record={state === 'Recording'}
         className="sound-wave"
         onStop={data => {
+          console.log(data);
           uploadFile(data.blob);
         }}
         strokeColor="#000000"
         backgroundColor="#FFF"
+        channelCount={1}
       />
     );
   },
@@ -122,24 +136,23 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
 
   const uploadFile = React.useCallback(
     async (blob: Blob) => {
-      const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
-      var formData = new FormData();
-      formData.append('file', blob);
-      formData.append('user', uid);
-      try {
-        await fetch(dest, {
-          // content-type header should not be specified!
-          method: 'POST',
-          mode: 'no-cors',
-          body: formData,
-        });
-        setState('Finished');
-      } catch (e) {
-        toast.error('Failed to upload file :(', {
-          position: toast.POSITION.BOTTOM_LEFT,
-        });
-        console.error(e);
-      }
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onload = async () => {
+        const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
+        var formData = new FormData();
+        formData.append('file', reader.result as string);
+        formData.append('user', uid);
+        try {
+          await Axios({ method: 'POST', url: dest, data: formData });
+          setState('Finished');
+        } catch (e) {
+          toast.error('Failed to upload file :(', {
+            position: toast.POSITION.BOTTOM_LEFT,
+          });
+          console.error(e);
+        }
+      };
     },
     [uid],
   );
@@ -165,7 +178,7 @@ const CaptureButton: React.FC<{
   state: CaptureState;
   setState: React.Dispatch<React.SetStateAction<CaptureState>>;
 }> = ({ state, setState }) => {
-  const timeSec = 20000;
+  const timeSec = 10000;
   const interval = 500;
   const [counter, setCounter] = React.useState(timeSec);
   const isRecording = state === 'Recording';

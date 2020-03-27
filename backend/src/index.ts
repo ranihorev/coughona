@@ -25,8 +25,9 @@ app.get("/", (req, res) => {
 // handle crashes here.
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    console.log("Uploading", req.body, `hasFile: ${Boolean(req.file)}`);
-    const result = await uploadFile(req.body.user, req.file.buffer);
+    console.log("Uploading", req.body.user, `hasFile: ${Boolean(req.file)}`);
+    const data = req.body.file;
+    const result = await uploadFile(`base64/${req.body.user}`, data);
     res.send("Success");
   } catch (e) {
     console.error(e);
