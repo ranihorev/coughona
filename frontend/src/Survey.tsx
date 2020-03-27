@@ -1,6 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { Button, LinearProgress, Link } from '@material-ui/core';
+import * as Sentry from '@sentry/browser';
 import * as typeform from '@typeform/embed';
 import Axios from 'axios';
 import isMobile, { isMobileResult } from 'ismobilejs';
@@ -149,6 +150,7 @@ const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
           toast.error('Failed to upload file :(', {
             position: toast.POSITION.BOTTOM_LEFT,
           });
+          Sentry.captureException(e);
           console.error(e);
         }
       };
@@ -226,7 +228,7 @@ const CaptureButton: React.FC<{
             setState('Recording');
           }
           if (state === 'Recording') {
-            setState('Finished');
+            setState('Uploading');
           }
         }}
         disabled={state !== 'Empty' && state !== 'Recording'}
