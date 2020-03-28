@@ -93,7 +93,7 @@ export const Survey: React.FC = () => {
           About
         </Link>
       </div>
-      {submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <Recorder uid={uid.current} />}
+      {!submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <Recorder uid={uid.current} />}
       <ToastContainer />
       <Dialog aria-labelledby="simple-dialog-title" open={!isSupported} css={{ textAlign: 'center' }}>
         <DialogTitle>Device not supported :(</DialogTitle>
