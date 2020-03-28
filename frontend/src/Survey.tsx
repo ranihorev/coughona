@@ -82,10 +82,6 @@ export const Survey: React.FC = () => {
       css={{
         width: '100%',
         height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
       }}
     >
       <div css={{ position: 'absolute', zIndex: 1000, top: 15, right: 15 }}>
@@ -93,7 +89,23 @@ export const Survey: React.FC = () => {
           About
         </Link>
       </div>
-      {!submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <Recorder uid={uid.current} />}
+      <div
+        css={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 'calc(100% - 40px)',
+          height: '100%',
+          padding: `0 20px`,
+        }}
+      >
+        {!submittedForm ? (
+          <div css={{ height: '100%', width: '100%' }} ref={ref}></div>
+        ) : (
+          <Recorder uid={uid.current} />
+        )}
+      </div>
       <ToastContainer />
       <Dialog aria-labelledby="simple-dialog-title" open={!isSupported} css={{ textAlign: 'center' }}>
         <DialogTitle>Device not supported :(</DialogTitle>

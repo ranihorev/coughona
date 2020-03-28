@@ -94,14 +94,28 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
             'Failed to store data :('
           )}
           <div css={{ height: 60 }} />
-          <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            <Typography>Want to listen to your recording?</Typography>
+          <div
+            css={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              '@media (max-width: 767px)': { alignSelf: 'flex-start', justifyContent: 'space-between', width: '100%' },
+            }}
+          >
+            <Typography style={{ fontSize: 14 }}>Want to listen to your recording?</Typography>
             <div css={{ width: 10 }} />
             {chunks ? <ReplayRecording data={chunks} /> : 'Failed to load recording'}
           </div>
           <div css={{ height: 20 }} />
-          <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            <Typography>Want to make a new recording?</Typography>
+          <div
+            css={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              '@media (max-width: 767px)': { alignSelf: 'flex-start', justifyContent: 'space-between', width: '100%' },
+            }}
+          >
+            <Typography style={{ fontSize: 14 }}>Want to make a new recording?</Typography>
             <div css={{ width: 10 }} />
             <Button
               variant="outlined"
@@ -111,9 +125,9 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
                 setChunks(undefined);
                 setRecordingState('Starting');
               }}
+              css={{ whiteSpace: 'nowrap' }}
             >
-              Record again{' '}
-              <span css={{ paddingLeft: 5, fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
+              Record <span css={{ paddingLeft: 5, fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
             </Button>
           </div>
         </React.Fragment>
