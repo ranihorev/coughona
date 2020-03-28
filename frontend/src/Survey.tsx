@@ -1,16 +1,14 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Button, LinearProgress, Link } from '@material-ui/core';
-import * as Sentry from '@sentry/browser';
+import { Dialog, DialogContent, DialogTitle, Link } from '@material-ui/core';
 import * as typeform from '@typeform/embed';
-import Axios from 'axios';
 import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
-import { ReactMic } from 'react-mic';
 import { Link as RouterLink } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
+import { Recorder } from './Recorder';
 
 const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
   if (data.amazon[type]) {
@@ -46,6 +44,21 @@ export const Survey: React.FC = () => {
   const ref = React.useRef<HTMLDivElement>(null);
   const [submittedForm, setSubmittedForm] = React.useState(false);
   const uid = React.useRef(uuidv4());
+  const [isSupported, setIsSupported] = React.useState(true);
+  const deviceData = isMobile();
+  React.useEffect(() => {
+    if (!navigator?.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setIsSupported(false);
+      return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(
+      success => {},
+      error => {
+        setIsSupported(false);
+      },
+    );
+  }, [setIsSupported]);
+
   React.useEffect(() => {
     const form_url = process.env.REACT_APP_FORM_URL;
     if (!ref.current) return;
@@ -62,28 +75,6 @@ export const Survey: React.FC = () => {
       },
     );
   }, [ref, ref.current]);
-
-  const isSupportedAgent = !navigator.userAgent.match('CriOS');
-
-  if (!isSupportedAgent) {
-    return (
-      <div
-        css={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: 18,
-          padding: 30,
-          textAlign: 'center',
-        }}
-      >
-        Audio recording is not supported on iOS, except on Safari. <br />
-        <div css={{ paddingTop: 8 }}>Please switch to Safari to continue</div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -102,148 +93,16 @@ export const Survey: React.FC = () => {
           About
         </Link>
       </div>
-      {!submittedForm ? (
-        <div css={{ height: '100%', width: '100%' }} ref={ref}></div>
-      ) : (
-        <AudioRecord uid={uid.current} />
-      )}
+      {submittedForm ? <div css={{ height: '100%', width: '100%' }} ref={ref}></div> : <Recorder uid={uid.current} />}
       <ToastContainer />
+      <Dialog aria-labelledby="simple-dialog-title" open={!isSupported} css={{ textAlign: 'center' }}>
+        <DialogTitle>Device not supported :(</DialogTitle>
+        <DialogContent css={{ marginBottom: 10, lineHeight: 1.5 }}>
+          {deviceData.apple.phone || deviceData.apple.tablet
+            ? 'Looks like you are using iPhone - Please try switching to Safari'
+            : 'Please try another browser (Chrome or Firefox)'}
+        </DialogContent>
+      </Dialog>
     </div>
-  );
-};
-
-type CaptureState = 'NotReady' | 'Empty' | 'Recording' | 'Uploading' | 'Finished' | 'Failed';
-
-const Recorder: React.FC<{ state: CaptureState; uploadFile: (data: Blob) => void }> = React.memo(
-  ({ state, uploadFile }) => {
-    return (
-      <ReactMic
-        record={state === 'Recording'}
-        className="sound-wave"
-        onStop={data => {
-          uploadFile(data.blob);
-        }}
-        strokeColor="#000000"
-        backgroundColor="#FFF"
-        channelCount={1}
-      />
-    );
-  },
-);
-
-const AudioRecord: React.FC<{ uid: string }> = ({ uid }) => {
-  const [state, setState] = React.useState<CaptureState>('NotReady');
-
-  const uploadFile = React.useCallback(
-    async (blob: Blob) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onload = async () => {
-        const dest = `${process.env.REACT_APP_BACKEND_URL}/upload`;
-        var formData = new FormData();
-        formData.append('file', reader.result as string);
-        formData.append('user', uid);
-        try {
-          await Axios({ method: 'POST', url: dest, data: formData });
-          setState('Finished');
-        } catch (e) {
-          toast.error('Failed to upload file :(', {
-            position: toast.POSITION.BOTTOM_LEFT,
-          });
-          Sentry.captureException(e);
-          console.error(e);
-        }
-      };
-    },
-    [uid],
-  );
-
-  return (
-    <React.Fragment>
-      <Recorder state={state} uploadFile={uploadFile} />
-      {state !== 'Finished' ? <CaptureButton {...{ state, setState }} /> : <div>Thank you!</div>}
-    </React.Fragment>
-  );
-};
-
-const stateToButtonTxt: { [state in CaptureState]: string } = {
-  NotReady: 'Checking Permissions',
-  Empty: 'Record Cough',
-  Recording: 'Recording',
-  Finished: 'Thank you!',
-  Uploading: 'Uploading',
-  Failed: 'No microphone permissions :(',
-};
-
-const CaptureButton: React.FC<{
-  state: CaptureState;
-  setState: React.Dispatch<React.SetStateAction<CaptureState>>;
-}> = ({ state, setState }) => {
-  const timeSec = 10000;
-  const interval = 500;
-  const [counter, setCounter] = React.useState(timeSec);
-  const isRecording = state === 'Recording';
-  React.useEffect(() => {
-    if (state !== 'Recording') return () => {};
-    if (counter <= 0) {
-      setState('Uploading');
-      return () => {};
-    }
-    const timer = setInterval(() => setCounter(counter - interval), interval);
-    return () => clearInterval(timer);
-  }, [setState, counter, state]);
-
-  React.useEffect(() => {
-    if (!navigator?.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setState('Failed');
-      return;
-    }
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(
-      success => {
-        setState('Empty');
-      },
-      error => {
-        setState('Failed');
-      },
-    );
-  }, [setState]);
-
-  return (
-    <React.Fragment>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          if (state === 'NotReady' || state === 'Failed') {
-            navigator.mediaDevices
-              .getUserMedia({ audio: true })
-              .then(a => {
-                setState('Recording');
-              })
-              .catch(() => {
-                setState('Failed');
-              });
-          }
-          if (state === 'Empty') {
-            setState('Recording');
-          }
-          if (state === 'Recording') {
-            setState('Uploading');
-          }
-        }}
-        disabled={state !== 'Empty' && state !== 'Recording'}
-      >
-        {stateToButtonTxt[state]}
-      </Button>
-      <div css={{ width: 200, height: 80, marginTop: 20 }}>
-        {isRecording && counter > 0 && (
-          <LinearProgress
-            variant="determinate"
-            value={(100 * (timeSec - counter)) / timeSec}
-            css={{ color: 'red !important' }}
-          />
-        )}
-      </div>
-    </React.Fragment>
   );
 };
