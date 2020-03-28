@@ -38,3 +38,4 @@ functions:
 custom:
   serverless-offline:
     httpPort: 4000
+    printOutput: true

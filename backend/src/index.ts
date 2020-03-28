@@ -7,7 +7,7 @@ dotenv.config();
 
 import { uploadFile } from "./s3upload";
 
-const port = process.env.PORT || 3001;
+// const port = process.env.PORT || 4000;
 const app = express();
 app.use(morgan("combined"));
 
@@ -27,7 +27,7 @@ var upload = multer({
 });
 
 // simple verification endpoint
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
   return res.send("Hello world");
 });
 
