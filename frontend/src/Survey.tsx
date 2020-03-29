@@ -67,6 +67,7 @@ const LanguageSelector: React.FC = () => {
       >
         {i18n.languages.map(lang => (
           <MenuItem
+            key={lang}
             onClick={() => {
               i18n.changeLanguage(lang);
               setAnchorEl(null);

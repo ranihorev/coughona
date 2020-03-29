@@ -59,7 +59,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: navigator.language,
+    whitelist: ['en', 'es'],
     fallbackLng: ['en', 'es'],
     keySeparator: false,
     interpolation: {
