@@ -36,7 +36,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   try {
     console.log("Uploading", req.body.user, `hasFile: ${Boolean(req.file)}`);
     const data = req.body.file;
-    const result = await uploadFile(`wav/${req.body.user}`, data);
+    const result = await uploadFile(`base64/${req.body.user}`, data);
     res.send("Success");
   } catch (e) {
     console.error(e);

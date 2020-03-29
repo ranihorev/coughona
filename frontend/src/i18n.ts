@@ -8,7 +8,7 @@ const resources: Resource = {
   en: {
     translation: {
       formID: 'B66hFI',
-      'Device not supported': 'Device not supported :(',
+      'device not supported': 'Device not supported :(',
       'using iPhone': 'Looks like you are using iPhone - Please try switching to Safari',
       'another browser': 'Please try another browser (Chrome or Firefox)',
       thanks: 'Thanks!',
