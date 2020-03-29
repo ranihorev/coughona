@@ -111,6 +111,7 @@ export const Survey: React.FC = () => {
     const form_url = process.env.REACT_APP_FORM_BASE_URL;
     if (!ref.current) return;
     const { model, type, userAgent } = getDeviceData();
+    if (submittedForm) return;
     typeform.makeWidget(
       ref.current,
       `${form_url}${t('formID')}?uid=${uid.current}&device_type=${type}&device_model=${model}&user_agent=${userAgent}`,
@@ -122,7 +123,7 @@ export const Survey: React.FC = () => {
         hideFooter: true,
       },
     );
-  }, [ref, ref.current, i18n.language]);
+  }, [ref, ref.current, i18n.language, submittedForm]);
 
   return (
     <React.Fragment>
@@ -144,7 +145,9 @@ export const Survey: React.FC = () => {
           </Link>
         </div>
         {!submittedForm ? (
-          <div css={{ height: '100%', width: '100%' }} ref={ref}></div>
+          <span>
+            <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
+          </span>
         ) : (
           <div
             css={{
