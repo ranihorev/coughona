@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core';
 import { Dialog, DialogContent, DialogTitle, Link, Menu, MenuItem } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import * as Sentry from '@sentry/browser';
 import * as typeform from '@typeform/embed';
 import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
@@ -93,12 +94,17 @@ export const Survey: React.FC = () => {
       setIsSupported(false);
       return;
     }
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(
-      success => {},
-      error => {
-        setIsSupported(false);
-      },
-    );
+    try {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(
+        success => {},
+        error => {
+          setIsSupported(false);
+        },
+      );
+    } catch (e) {
+      setIsSupported(false);
+      Sentry.captureException(e);
+    }
   }, [setIsSupported]);
 
   React.useEffect(() => {
