@@ -47,11 +47,11 @@ const resources: Resource = {
       'try again': 'Falló, por favor trata otra vez',
     },
   },
-  it: {
-    translation: {
-      formID: 'ClzG2Z',
-    },
-  },
+  //   it: {
+  //     translation: {
+  //       formID: 'ClzG2Z',
+  //     },
+  //   },
 };
 
 i18n
@@ -60,7 +60,7 @@ i18n
   .init({
     resources,
     lng: navigator.language,
-    fallbackLng: ['en', 'es', 'it'],
+    fallbackLng: ['en', 'es'],
     keySeparator: false,
     interpolation: {
       escapeValue: false,
