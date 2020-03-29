@@ -1,11 +1,12 @@
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
-import { Button, LinearProgress, Typography, CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress, LinearProgress, Typography } from '@material-ui/core';
+import SendIcon from '@material-ui/icons/Send';
 import * as Sentry from '@sentry/browser';
 import Axios from 'axios';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import SendIcon from '@material-ui/icons/Send';
 import 'react-toastify/dist/ReactToastify.css';
 
 const blinking = keyframes`
@@ -25,8 +26,6 @@ type PreCaptureFinishedState = Exclude<CaptureState, 'Finished'>;
 type UploadState = 'Waiting' | 'Uploading' | 'Finished' | 'Failed';
 type PreUploadFinishedState = Exclude<UploadState, 'Finished'>;
 
-const TYPES = ['audio/webm', 'audio/ogg', 'audio/wav'];
-
 interface DataEvent extends Event {
   data: Blob;
 }
@@ -42,6 +41,7 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
   const [uploadState, setUploadState] = React.useState<UploadState>('Waiting');
   const [chunks, setChunks] = React.useState<Blob | undefined>();
   const recorder = React.useRef<MediaRecorder>();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     if (!recorder.current) {
@@ -83,10 +83,8 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <div css={{ textAlign: 'center', fontSize: 20, fontWeight: 700, paddingBottom: 6 }}>Thanks!</div>
-          <Typography css={{ textAlign: 'center' }}>
-            Your recording is now complete, tap to upload your cough
-          </Typography>
+          <div css={{ textAlign: 'center', fontSize: 20, fontWeight: 700, paddingBottom: 6 }}>{t('thanks')}</div>
+          <Typography css={{ textAlign: 'center' }}>{t('tap to upload')}</Typography>
           <div css={{ height: 20 }} />
           {chunks ? (
             <Uploader uid={uid} data={chunks} state={uploadState} setState={setUploadState} />
@@ -102,7 +100,7 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
               '@media (max-width: 767px)': { alignSelf: 'flex-start', justifyContent: 'space-between', width: '100%' },
             }}
           >
-            <Typography style={{ fontSize: 14 }}>Want to listen to your recording?</Typography>
+            <Typography style={{ fontSize: 14 }}>{t('want to listen')}</Typography>
             <div css={{ width: 10 }} />
             {chunks ? <ReplayRecording data={chunks} /> : 'Failed to load recording'}
           </div>
@@ -115,7 +113,7 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
               '@media (max-width: 767px)': { alignSelf: 'flex-start', justifyContent: 'space-between', width: '100%' },
             }}
           >
-            <Typography style={{ fontSize: 14 }}>Want to make a new recording?</Typography>
+            <Typography style={{ fontSize: 14 }}>{t('want new recording')}</Typography>
             <div css={{ width: 10 }} />
             <Button
               variant="outlined"
@@ -127,7 +125,8 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
               }}
               css={{ whiteSpace: 'nowrap' }}
             >
-              Record <span css={{ paddingLeft: 5, fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
+              {t('restart')}{' '}
+              <span css={{ paddingLeft: 5, fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
             </Button>
           </div>
         </React.Fragment>
@@ -136,26 +135,28 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
   );
 };
 
-const uploadStateToElement: { [state in PreUploadFinishedState]: React.ReactChild } = {
-  Waiting: (
-    <React.Fragment>
-      Upload Cough <SendIcon fontSize="small" css={{ marginLeft: 10 }} />
-    </React.Fragment>
-  ),
-  Uploading: (
-    <React.Fragment>
-      Uploading <CircularProgress css={{ marginLeft: 10 }} size={16} />
-    </React.Fragment>
-  ),
-  Failed: 'Failed, please click to try again :(',
-};
-
 const Uploader: React.FC<{
   data: Blob;
   uid: string;
   state: PreUploadFinishedState;
   setState: React.Dispatch<React.SetStateAction<UploadState>>;
 }> = ({ data, uid, state, setState }) => {
+  const { t } = useTranslation();
+
+  const uploadStateToElement: { [state in PreUploadFinishedState]: React.ReactChild } = {
+    Waiting: (
+      <React.Fragment>
+        {t('start upload')} <SendIcon fontSize="small" css={{ marginLeft: 10 }} />
+      </React.Fragment>
+    ),
+    Uploading: (
+      <React.Fragment>
+        {t('uploading')} <CircularProgress css={{ marginLeft: 10 }} size={16} />
+      </React.Fragment>
+    ),
+    Failed: <React.Fragment>{t('try again')}</React.Fragment>,
+  };
+
   return (
     <Button
       variant="contained"
@@ -176,7 +177,7 @@ const Uploader: React.FC<{
             setState('Finished');
           } catch (e) {
             setState('Failed');
-            toast.error('Failed to upload file :(', {
+            toast.error(t('failed to upload'), {
               position: toast.POSITION.BOTTOM_LEFT,
             });
             Sentry.captureException(e);
@@ -192,6 +193,7 @@ const Uploader: React.FC<{
 
 const ReplayRecording: React.FC<{ data: Blob }> = ({ data }) => {
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const { t } = useTranslation();
   const howler = React.useRef(
     new Howl({
       src: [URL.createObjectURL(data)],
@@ -214,24 +216,10 @@ const ReplayRecording: React.FC<{ data: Blob }> = ({ data }) => {
           }
         }}
       >
-        {isPlaying ? 'Stop' : 'Play'} <span css={{ paddingLeft: 5, fontSize: 10, color: 'black' }}>▶</span>
+        {isPlaying ? t('stop') : t('play')} <span css={{ paddingLeft: 5, fontSize: 10, color: 'black' }}>▶</span>
       </Button>
     </React.Fragment>
   );
-};
-
-const recordingStateToElement: { [state in PreCaptureFinishedState]: React.ReactChild } = {
-  Empty: 'Click here to start recording your cough',
-  Starting: 'Initialized',
-  Recording: (
-    <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      Finish Recording
-      <div
-        css={{ animation: `${blinking} 1s ease infinite`, marginLeft: 10, height: 12, width: 12, borderRadius: 999 }}
-      ></div>
-    </div>
-  ),
-  Stop: 'Stopping',
 };
 
 const CaptureProgress: React.FC<{
@@ -269,6 +257,21 @@ const CaptureButton: React.FC<{
   state: PreCaptureFinishedState;
   setState: React.Dispatch<React.SetStateAction<CaptureState>>;
 }> = ({ state, setState }) => {
+  const { t } = useTranslation();
+  const recordingStateToElement: { [state in PreCaptureFinishedState]: React.ReactChild } = {
+    Empty: <React.Fragment>{t('start recording')}</React.Fragment>,
+    Starting: 'Initialized',
+    Recording: (
+      <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+        {t('stop recording')}
+        <div
+          css={{ animation: `${blinking} 1s ease infinite`, marginLeft: 10, height: 12, width: 12, borderRadius: 999 }}
+        ></div>
+      </div>
+    ),
+    Stop: 'Stopping',
+  };
+
   return (
     <Button
       variant="contained"
