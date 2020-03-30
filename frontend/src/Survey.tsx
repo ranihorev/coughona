@@ -2,7 +2,6 @@
 import { jsx } from '@emotion/core';
 import { Dialog, DialogContent, DialogTitle, Link, Menu, MenuItem } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import * as Sentry from '@sentry/browser';
 import * as typeform from '@typeform/embed';
 import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
@@ -13,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
 import { langDisplayNames } from './i18n';
 import { Recorder } from './Recorder';
+import DetectRTC from 'detectrtc';
 
 const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
   if (data.amazon[type]) {
@@ -95,17 +95,11 @@ export const Survey: React.FC = () => {
       setIsSupported(false);
       return;
     }
-    try {
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(
-        success => {},
-        error => {
-          setIsSupported(false);
-        },
-      );
-    } catch (e) {
-      setIsSupported(false);
-      Sentry.captureException(e);
-    }
+    DetectRTC.load(() => {
+      if (!DetectRTC.hasMicrophone) {
+        setIsSupported(false);
+      }
+    });
   }, [setIsSupported]);
 
   React.useEffect(() => {
