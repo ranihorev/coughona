@@ -121,6 +121,7 @@ export const Survey: React.FC = () => {
       {
         onSubmit: () => {
           setSubmittedForm(true);
+          ReactGA.event({ category: 'Survey', action: 'Submitted' });
         },
         hideHeaders: true,
         hideFooter: true,

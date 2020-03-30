@@ -64,12 +64,14 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
           throw new Error('Data is missing in recording');
         }
       });
+      ReactGA.event({ category: 'Survey', action: 'Recording' });
       setRecordingState('Recording');
       recorder.current.start();
     } else if (recordingState === 'Stop') {
       if (!recorder.current) throw Error('Recorder should be initialized');
       recorder.current.stop();
       setRecordingState('Finished');
+      ReactGA.event({ category: 'Survey', action: 'RecordingFinished' });
     }
   }, [recordingState]);
 
@@ -168,6 +170,7 @@ const Uploader: React.FC<{
       disabled={state === 'Uploading'}
       onClick={async () => {
         setState('Uploading');
+        ReactGA.event({ category: 'Survey', action: 'Uploading' });
         const reader = new FileReader();
         reader.readAsDataURL(data);
         reader.onload = async () => {
@@ -177,6 +180,7 @@ const Uploader: React.FC<{
           formData.append('user', uid);
           try {
             await Axios({ method: 'POST', url: dest, data: formData });
+            ReactGA.event({ category: 'Survey', action: 'UploadingFinished' });
             setState('Finished');
           } catch (e) {
             setState('Failed');
