@@ -84,7 +84,7 @@ const italian: { [key in BaseKeys]: string } = {
   'try again': 'Errore, per favore prova di nuovo',
 };
 
-const chinese: { [key in BaseKeys]: string } = {
+const mandarin: { [key in BaseKeys]: string } = {
   formID: 'WOePzB',
   'device not supported': '不支援的装置',
   'using iPhone': '好像您使用的是iPhone-请尝试切换到Safari。',
@@ -115,16 +115,16 @@ const resources: Resource = {
     translation: italian,
   },
   zh: {
-    translation: chinese,
+    translation: mandarin,
   },
 };
 
 const languages = Object.keys(resources);
 export const langDisplayNames: { [key in keyof typeof resources]: string } = {
-  en: 'English',
-  es: 'Spanish',
-  it: 'Italian',
-  zh: 'Chinese',
+  en: '🇬🇧 English',
+  es: '🇪🇸 Español',
+  it: '🇮🇹 Italiano',
+  zh: '🇨🇳 國語',
 };
 
 i18n
