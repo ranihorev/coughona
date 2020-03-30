@@ -148,7 +148,7 @@ export const Survey: React.FC = () => {
             About
           </Link>
         </div>
-        {submittedForm ? (
+        {!submittedForm ? (
           <span>
             <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
           </span>
