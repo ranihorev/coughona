@@ -84,6 +84,26 @@ const italian: { [key in BaseKeys]: string } = {
   'try again': 'Errore, per favore prova di nuovo',
 };
 
+const chinese: { [key in BaseKeys]: string } = {
+  formID: 'WOePzB',
+  'device not supported': '不支援的装置',
+  'using iPhone': '好像您使用的是iPhone-请尝试切换到Safari。',
+  'another browser': '请尝试使用其他浏览器（Chrome或Firefox）',
+  thanks: '谢谢！',
+  'tap to upload': '录制完成。 点击以上传您的咳嗽。',
+  'start upload': '上传',
+  play: '玩',
+  stop: '停止',
+  restart: '重新开始',
+  'want to listen': '想听你的录音吗？',
+  'want new recording': '要录制新唱片吗？',
+  'start recording': '开始记录你的咳嗽',
+  'stop recording': '停止录音',
+  uploading: '上传咳嗽',
+  'failed to upload': '上传文件失败 :(',
+  'try again': '失败，请单击以重试',
+};
+
 const resources: Resource = {
   en: {
     translation: english,
@@ -94,9 +114,18 @@ const resources: Resource = {
   it: {
     translation: italian,
   },
+  zh: {
+    translation: chinese,
+  },
 };
 
-const languages = ['en', 'es', 'it'];
+const languages = Object.keys(resources);
+export const langDisplayNames: { [key in keyof typeof resources]: string } = {
+  en: 'English',
+  es: 'Spanish',
+  it: 'Italian',
+  zh: 'Chinese',
+};
 
 i18n
   .use(detector)

@@ -11,6 +11,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
+import { langDisplayNames } from './i18n';
 import { Recorder } from './Recorder';
 
 const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
@@ -54,7 +55,7 @@ const LanguageSelector: React.FC = () => {
         }}
       >
         <Link css={{ display: 'flex', flexDirection: 'row', alignItems: 'center', lineHeight: 1, cursor: 'pointer' }}>
-          {i18n.language} <ArrowDropDownIcon fontSize="small" />
+          {langDisplayNames[i18n.language]} <ArrowDropDownIcon fontSize="small" />
         </Link>
       </span>
       <Menu
@@ -66,7 +67,7 @@ const LanguageSelector: React.FC = () => {
           setAnchorEl(null);
         }}
       >
-        {i18n.languages.map(lang => (
+        {Object.entries(langDisplayNames).map(([lang, name]) => (
           <MenuItem
             key={lang}
             onClick={() => {
@@ -74,7 +75,7 @@ const LanguageSelector: React.FC = () => {
               setAnchorEl(null);
             }}
           >
-            {lang}
+            {name}
           </MenuItem>
         ))}
       </Menu>
