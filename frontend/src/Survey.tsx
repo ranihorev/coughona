@@ -3,8 +3,10 @@ import { jsx } from '@emotion/core';
 import { Dialog, DialogContent, DialogTitle, Link, Menu, MenuItem } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import * as typeform from '@typeform/embed';
+import DetectRTC from 'detectrtc';
 import isMobile, { isMobileResult } from 'ismobilejs';
 import React from 'react';
+import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -12,7 +14,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
 import { langDisplayNames } from './i18n';
 import { Recorder } from './Recorder';
-import DetectRTC from 'detectrtc';
 
 const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
   if (data.amazon[type]) {
@@ -91,6 +92,7 @@ export const Survey: React.FC = () => {
   const [isSupported, setIsSupported] = React.useState(true);
   const deviceData = isMobile();
   React.useEffect(() => {
+    ReactGA.event({ category: 'Survey', action: 'Start' });
     if (!navigator?.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setIsSupported(false);
       return;
@@ -101,6 +103,12 @@ export const Survey: React.FC = () => {
       }
     });
   }, [setIsSupported]);
+
+  React.useEffect(() => {
+    if (!isSupported) {
+      ReactGA.event({ category: 'Survey', action: 'NotSupported' });
+    }
+  }, [isSupported]);
 
   React.useEffect(() => {
     const form_url = process.env.REACT_APP_FORM_BASE_URL;
@@ -139,7 +147,7 @@ export const Survey: React.FC = () => {
             About
           </Link>
         </div>
-        {!submittedForm ? (
+        {submittedForm ? (
           <span>
             <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
           </span>

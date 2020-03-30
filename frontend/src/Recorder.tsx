@@ -5,6 +5,7 @@ import SendIcon from '@material-ui/icons/Send';
 import * as Sentry from '@sentry/browser';
 import Axios from 'axios';
 import React from 'react';
+import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,16 +45,18 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    if (!recorder.current) {
-      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        recorder.current = new MediaRecorder(stream);
-      });
-    }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      recorder.current = new MediaRecorder(stream);
+    });
   }, []);
 
   React.useEffect(() => {
     if (recordingState === 'Starting') {
-      if (!recorder.current) throw Error('Recorder should be initialized');
+      if (!recorder.current) {
+        ReactGA.event({ category: 'Survey', action: 'RecordingFailed' });
+        toast.error('Failed to start recording :(');
+        return;
+      }
       recorder.current.addEventListener('dataavailable', e => {
         if (isDataEvent(e)) {
           setChunks(e.data);

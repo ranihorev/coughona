@@ -27,6 +27,7 @@
     "ismobilejs": "^1.0.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-ga": "^2.7.0",
     "react-i18next": "^11.3.4",
     "react-mic": "^12.4.1",
     "react-router-dom": "^5.1.2",

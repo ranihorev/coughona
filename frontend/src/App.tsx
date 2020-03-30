@@ -3,8 +3,11 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { About } from './About';
 import { Player } from './Player';
 import { Survey } from './Survey';
+import ReactGA from 'react-ga';
 
-const App = () => {
+ReactGA.initialize('UA-162027634-1', { debug: true });
+
+const App: React.FC = () => {
   return (
     <div className="App">
       <BrowserRouter>
