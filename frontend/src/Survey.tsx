@@ -148,11 +148,7 @@ export const Survey: React.FC = () => {
             About
           </Link>
         </div>
-        {!submittedForm ? (
-          <span>
-            <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
-          </span>
-        ) : (
+        {process.env.REACT_APP_SKIP_FORM || submittedForm ? (
           <div
             css={{
               display: 'flex',
@@ -166,6 +162,10 @@ export const Survey: React.FC = () => {
           >
             <Recorder uid={uid.current} />
           </div>
+        ) : (
+          <span>
+            <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
+          </span>
         )}
         <ToastContainer />
         <Dialog aria-labelledby="simple-dialog-title" open={!isSupported} css={{ textAlign: 'center' }}>
