@@ -5,7 +5,7 @@ import { Player } from './Player';
 import { Survey } from './Survey';
 import ReactGA from 'react-ga';
 
-ReactGA.initialize('UA-162027634-1', { debug: true });
+ReactGA.initialize('UA-162027634-1');
 
 const App: React.FC = () => {
   return (
