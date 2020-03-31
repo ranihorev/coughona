@@ -79,7 +79,7 @@ const italian: { [key in BaseKeys]: string } = {
   'want new recording': 'La vuoi registrare di nuovo?',
   'start recording': 'Inizia a registrare la tua tosse',
   'stop recording': 'Blocca la registrazione',
-  uploading: 'Caricamento della registrazione',
+  uploading: 'Caricamento della registrazione...',
   'failed to upload': 'Errore nel caricamento del file :(',
   'try again': 'Errore, per favore prova di nuovo',
 };
@@ -104,6 +104,26 @@ const mandarin: { [key in BaseKeys]: string } = {
   'try again': '失败，请单击以重试',
 };
 
+const german: { [key in BaseKeys]: string } = {
+  formID: 'pkavl4',
+  'device not supported': 'Nicht unterstützte Geräte',
+  'using iPhone': 'iPhone-Nutzer? Bitte Safari verwenden',
+  'another browser': 'Bitte versuchen Sie es noch einmal mit einem anderen Browser (Chrome oder Firefox).',
+  thanks: 'Vielen Dank!',
+  'tap to upload': 'Ihre Aufnahme ist jetzt fertig. Tippen Sie hier, um Ihre Hustenaufnahme hochzuladen',
+  'start upload': 'Hochladen',
+  play: 'Abspielen',
+  stop: 'Stop',
+  restart: 'Aufzeichnen',
+  'want to listen': 'Möchten Sie Ihre Aufnahme anhören?',
+  'want new recording': 'Möchten Sie eine neue Aufnahme machen?',
+  'start recording': 'Fangen Sie an, Ihren Husten aufzuzeichnen',
+  'stop recording': 'Aufnahme abschließen',
+  uploading: 'Hochladen...',
+  'failed to upload': 'Hochladen nicht erfolgreich :(',
+  'try again': 'Gescheitert, bitte klicken Sie um es noch einmal zu versuchen',
+};
+
 const resources: Resource = {
   en: {
     translation: english,
@@ -117,14 +137,20 @@ const resources: Resource = {
   zh: {
     translation: mandarin,
   },
+  de: {
+    translation: german,
+  },
 };
 
 const languages = Object.keys(resources);
-export const langDisplayNames: { [key in keyof typeof resources]: string } = {
+type Language = keyof typeof resources;
+
+export const langDisplayNames: { [key in Language]: string } = {
   en: '🇬🇧 English',
   es: '🇪🇸 Español',
   it: '🇮🇹 Italiano',
   zh: '🇨🇳 國語',
+  de: '🇩🇪 Deutsch',
 };
 
 i18n
