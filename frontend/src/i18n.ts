@@ -124,6 +124,26 @@ const german: { [key in BaseKeys]: string } = {
   'try again': 'Gescheitert, bitte klicken Sie um es noch einmal zu versuchen',
 };
 
+const hebrew: { [key in BaseKeys]: string } = {
+  formID: 'HAX7wR',
+  'device not supported': 'המכשיר או הדפדפן אינם נתמכים :(',
+  'using iPhone': 'נראה שהנך משתמש באייפון, נסה לפתוח את האתר בספארי',
+  'another browser': 'אנא נסה דפדפן אחר - Chrome או Firefox',
+  thanks: 'תודה!',
+  'tap to upload': 'הקלטת השיעול הושלמה, לחץ כאן על מנת להעלות אותה',
+  'start upload': 'התחל העלאה',
+  play: 'נגן',
+  stop: 'עצור',
+  restart: 'הקלט מחדש',
+  'want to listen': 'רוצה לשמוע את ההקלטה?',
+  'want new recording': 'מעוניין להקליט מחדש?',
+  'start recording': 'התחל הקלטה',
+  'stop recording': 'סיים הקלטה',
+  uploading: 'מעלה...',
+  'failed to upload': 'העלאת הקובץ נכשלה :(',
+  'try again': 'נסה להעלות שנית',
+};
+
 const resources: Resource = {
   en: {
     translation: english,
@@ -140,6 +160,9 @@ const resources: Resource = {
   de: {
     translation: german,
   },
+  he: {
+    translation: hebrew,
+  },
 };
 
 const languages = Object.keys(resources);
@@ -151,6 +174,7 @@ export const langDisplayNames: { [key in Language]: string } = {
   it: '🇮🇹 Italiano',
   zh: '🇨🇳 國語',
   de: '🇩🇪 Deutsch',
+  he: '🇮🇱 עברית',
 };
 
 i18n

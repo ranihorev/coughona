@@ -9,6 +9,7 @@ import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Spacer } from './Spacer';
 
 const blinking = keyframes`
   0% {
@@ -106,7 +107,7 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
             }}
           >
             <Typography style={{ fontSize: 14 }}>{t('want to listen')}</Typography>
-            <div css={{ width: 10 }} />
+            <Spacer width={10} />
             {chunks ? <ReplayRecording data={chunks} /> : 'Failed to load recording'}
           </div>
           <div css={{ height: 20 }} />
@@ -119,7 +120,7 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
             }}
           >
             <Typography style={{ fontSize: 14 }}>{t('want new recording')}</Typography>
-            <div css={{ width: 10 }} />
+            <Spacer width={10} />
             <Button
               variant="outlined"
               size="small"
@@ -130,8 +131,8 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
               }}
               css={{ whiteSpace: 'nowrap' }}
             >
-              {t('restart')}{' '}
-              <span css={{ paddingLeft: 5, fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
+              {t('restart')} <Spacer width={5} />
+              <span css={{ fontSize: 18, lineHeight: 1, marginTop: -2, color: 'red' }}>●</span>
             </Button>
           </div>
         </React.Fragment>
@@ -151,12 +152,14 @@ const Uploader: React.FC<{
   const uploadStateToElement: { [state in PreUploadFinishedState]: React.ReactChild } = {
     Waiting: (
       <React.Fragment>
-        {t('start upload')} <SendIcon fontSize="small" css={{ marginLeft: 10 }} />
+        {t('start upload')} <Spacer width={10} />
+        <SendIcon fontSize="small" />
       </React.Fragment>
     ),
     Uploading: (
       <React.Fragment>
-        {t('uploading')} <CircularProgress css={{ marginLeft: 10 }} size={16} />
+        {t('uploading')} <Spacer width={10} />
+        <CircularProgress size={16} />
       </React.Fragment>
     ),
     Failed: <React.Fragment>{t('try again')}</React.Fragment>,
@@ -223,7 +226,8 @@ const ReplayRecording: React.FC<{ data: Blob }> = ({ data }) => {
           }
         }}
       >
-        {isPlaying ? t('stop') : t('play')} <span css={{ paddingLeft: 5, fontSize: 10, color: 'black' }}>▶</span>
+        {isPlaying ? t('stop') : t('play')} <Spacer width={5} />
+        <span css={{ fontSize: 10, color: 'black' }}>▶</span>
       </Button>
     </React.Fragment>
   );
@@ -271,9 +275,8 @@ const CaptureButton: React.FC<{
     Recording: (
       <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
         {t('stop recording')}
-        <div
-          css={{ animation: `${blinking} 1s ease infinite`, marginLeft: 10, height: 12, width: 12, borderRadius: 999 }}
-        ></div>
+        <Spacer width={10} />
+        <div css={{ animation: `${blinking} 1s ease infinite`, height: 12, width: 12, borderRadius: 999 }}></div>
       </div>
     ),
     Stop: 'Stopping',
