@@ -144,6 +144,26 @@ const hebrew: { [key in BaseKeys]: string } = {
   'try again': 'נסה להעלות שנית',
 };
 
+const french: { [key in BaseKeys]: string } = {
+  formID: 'YtIobe',
+  'device not supported': 'Appareils non pris en charge',
+  'using iPhone': 'Il paraît que vous utilisez un iPhone - Veuillez essayer Safari',
+  'another browser': 'Veuillez essayer un autre navigateur (Chrome ou Firefox)',
+  thanks: 'Merci!',
+  'tap to upload': 'Votre enregistrement est terminé. Cliquez pour soumettre votre toux',
+  'start upload': 'Soumettre',
+  play: 'Écouter',
+  stop: 'Arrêter',
+  restart: 'Enregistrer',
+  'want to listen': 'Voulez-vous écouter votre enregistrement?',
+  'want new recording': 'Vous-voulez commencer un nouvel enregistrement?',
+  'start recording': 'Commencer l’enregistrement',
+  'stop recording': 'Finir l’enregistrement',
+  uploading: 'Transfert en cours...',
+  'failed to upload': 'Erreur dans le transfert de l’enregistrement :(',
+  'try again': 'Erreur, cliquez pour réessayer',
+};
+
 const resources: Resource = {
   en: {
     translation: english,
@@ -163,6 +183,9 @@ const resources: Resource = {
   he: {
     translation: hebrew,
   },
+  fr: {
+    translation: french,
+  },
 };
 
 const languages = Object.keys(resources);
@@ -175,6 +198,7 @@ export const langDisplayNames: { [key in Language]: string } = {
   zh: '🇨🇳 國語',
   de: '🇩🇪 Deutsch',
   he: '🇮🇱 עברית',
+  fr: '🇫🇷 Français',
 };
 
 i18n
