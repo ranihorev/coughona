@@ -23,7 +23,7 @@ const blinking = keyframes`
   }
 `;
 
-export type CaptureState = 'Empty' | 'Starting' | 'Recording' | 'Stop' | 'Finished';
+export type CaptureState = 'Empty' | 'Starting' | 'Recording' | 'Stop' | 'Finished' | 'NoPermissions';
 type PreCaptureFinishedState = Exclude<CaptureState, 'Finished'>;
 type UploadState = 'Waiting' | 'Uploading' | 'Finished' | 'Failed';
 type PreUploadFinishedState = Exclude<UploadState, 'Finished'>;
@@ -38,27 +38,39 @@ const isDataEvent = (e: Event): e is DataEvent => {
   return false;
 };
 
+const setupRecorder = (setRecordingState: React.Dispatch<React.SetStateAction<CaptureState>>, shouldStart: boolean) => {
+  navigator.mediaDevices
+    .getUserMedia({ audio: true })
+    .then(stream => {
+      recorder = new MediaRecorder(stream);
+      setRecordingState(shouldStart ? 'Starting' : 'Empty');
+    })
+    .catch(e => {
+      setRecordingState('NoPermissions');
+      toast.error('Please enable microphone permissions');
+    });
+};
+
+let recorder: MediaRecorder | undefined;
+
 export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
   const [recordingState, setRecordingState] = React.useState<CaptureState>('Empty');
   const [uploadState, setUploadState] = React.useState<UploadState>('Waiting');
   const [chunks, setChunks] = React.useState<Blob | undefined>();
-  const recorder = React.useRef<MediaRecorder>();
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-      recorder.current = new MediaRecorder(stream);
-    });
+    setupRecorder(setRecordingState, false);
   }, []);
 
   React.useEffect(() => {
     if (recordingState === 'Starting') {
-      if (!recorder.current) {
+      if (!recorder) {
         ReactGA.event({ category: 'Survey', action: 'RecordingFailed' });
         toast.error('Failed to start recording :(');
         return;
       }
-      recorder.current.addEventListener('dataavailable', e => {
+      recorder.addEventListener('dataavailable', e => {
         if (isDataEvent(e)) {
           setChunks(e.data);
         } else {
@@ -67,10 +79,10 @@ export const Recorder: React.FC<{ uid: string }> = ({ uid }) => {
       });
       ReactGA.event({ category: 'Survey', action: 'Recording' });
       setRecordingState('Recording');
-      recorder.current.start();
+      recorder.start();
     } else if (recordingState === 'Stop') {
-      if (!recorder.current) throw Error('Recorder should be initialized');
-      recorder.current.stop();
+      if (!recorder) throw Error('Recorder should be initialized');
+      recorder.stop();
       setRecordingState('Finished');
       ReactGA.event({ category: 'Survey', action: 'RecordingFinished' });
     }
@@ -271,6 +283,7 @@ const CaptureButton: React.FC<{
   const { t } = useTranslation();
   const recordingStateToElement: { [state in PreCaptureFinishedState]: React.ReactChild } = {
     Empty: <React.Fragment>{t('start recording')}</React.Fragment>,
+    NoPermissions: <React.Fragment>{t('start recording')}</React.Fragment>,
     Starting: 'Initialized',
     Recording: (
       <div css={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -288,14 +301,15 @@ const CaptureButton: React.FC<{
       color="primary"
       size="large"
       onClick={() => {
-        if (state === 'Empty') {
+        if (state === 'NoPermissions') {
+          setupRecorder(setState, true);
+        } else if (state === 'Empty') {
           setState('Starting');
-        }
-        if (state === 'Recording') {
+        } else if (state === 'Recording') {
           setState('Stop');
         }
       }}
-      disabled={state !== 'Empty' && state !== 'Recording'}
+      disabled={!['Empty', 'Recording', 'NoPermissions'].includes(state)}
     >
       {recordingStateToElement[state]}
     </Button>

@@ -127,7 +127,7 @@ export const Survey: React.FC = () => {
         hideFooter: true,
       },
     );
-  }, [ref, ref.current, i18n.language, submittedForm]);
+  }, [ref, ref.current, i18n.language, submittedForm, t]);
 
   return (
     <React.Fragment>
@@ -167,7 +167,7 @@ export const Survey: React.FC = () => {
             <div className="typeform" css={{ height: '100%', width: '100%' }} ref={ref}></div>
           </span>
         )}
-        <ToastContainer />
+        <ToastContainer position="bottom-left" />
         <Dialog aria-labelledby="simple-dialog-title" open={!isSupported} css={{ textAlign: 'center' }}>
           <DialogTitle>{t('device not supported')}</DialogTitle>
           <DialogContent css={{ marginBottom: 10, lineHeight: 1.5 }}>
