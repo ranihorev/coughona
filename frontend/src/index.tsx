@@ -6,12 +6,11 @@ import App from './App';
 import './index.css';
 import './i18n';
 import * as serviceWorker from './serviceWorker';
+import * as packageJson from '../package.json';
 
 (window as any).MediaRecorder = AudioRecorder;
-// if (!window.MediaRecorder) {
-// }
 
-Sentry.init({ dsn: 'https://328eab0f24314cf3a439b643ceb8f39b@sentry.io/5177832' });
+Sentry.init({ dsn: 'https://328eab0f24314cf3a439b643ceb8f39b@sentry.io/5177832', release: packageJson.version });
 
 ReactDOM.render(
   <React.StrictMode>
