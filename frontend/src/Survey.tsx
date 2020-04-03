@@ -1,6 +1,16 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { Dialog, DialogContent, DialogTitle, Link, Menu, MenuItem } from '@material-ui/core';
+import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Link,
+  Menu,
+  MenuItem,
+  Button,
+  DialogActions,
+} from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import * as typeform from '@typeform/embed';
 import DetectRTC from 'detectrtc';
@@ -14,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
 import { langDisplayNames } from './i18n';
 import { Recorder } from './Recorder';
+import { Spacer } from './Spacer';
 
 const getDeviceModel = (data: isMobileResult, type: 'tablet' | 'phone') => {
   if (data.amazon[type]) {
@@ -84,6 +95,50 @@ const LanguageSelector: React.FC = () => {
   );
 };
 
+const PopupReferral: React.FC = () => {
+  const [isOpen, setIsOpen] = React.useState(true);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  return (
+    <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+      <DialogContent>
+        <DialogContentText>
+          Hi, to make a bigger impact we decided to collaborate with other groups that work on similar projects and
+          consolidate efforts. We recommend filling out the questionnaire on <b>voca.ai</b>,{' '}
+          <Link css={{ cursor: 'pointer' }} onClick={() => setIsExpanded(state => !state)}>
+            Why?
+          </Link>
+          {isExpanded && (
+            <p css={{ fontSize: 14 }}>
+              After we launched Coughona.com, we received hundreds of emails from people asking to volunteer. Thank you
+              all! As part of it, we also found other projects trying to achieve the same thing, including:
+              <p>
+                <Link href="https://voca.ai/corona-virus/">voca.ai</Link>
+                <br />
+                <Link href="https://www.vocalishealth.com/">VocalisHealth</Link>
+                <br />
+                <Link href="https://www.breatheforscience.com/">BreatheForScience</Link>
+                <br />
+              </p>
+              We are firm believers that collaboration can lead to greater things and specifically right now will
+              increase humanity's chances of fighting this virus.
+            </p>
+          )}
+        </DialogContentText>
+        <DialogActions css={{ justifyContent: 'space-between', flexDirection: 'column' }}>
+          <Button href="https://voca.ai/corona-virus/" color="primary" variant="contained" autoFocus>
+            Go to VOCA.AI
+          </Button>
+          <Spacer height={10} />
+          <Button onClick={() => setIsOpen(false)} color="primary">
+            Continue Anyway
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export const Survey: React.FC = () => {
   const { t, i18n } = useTranslation();
   const ref = React.useRef<HTMLDivElement>(null);
@@ -131,6 +186,7 @@ export const Survey: React.FC = () => {
 
   return (
     <React.Fragment>
+      <PopupReferral />
       <div css={{ position: 'absolute', zIndex: 1000, top: 15, left: 15 }}>
         <LanguageSelector />
       </div>
